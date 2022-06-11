@@ -43,6 +43,10 @@ dependencies:
   firebase_core: ^1.17.1
   firebase_database: ^9.0.15
   google_sign_in: ^5.3.3
+  qr_code_scanner:
+  fluttertoast: ^8.0.9
+  share_plus: ^4.0.4
+  qr_flutter: ^4.0.0
   flutter_localizations:
    sdk: flutter
    
@@ -50,6 +54,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

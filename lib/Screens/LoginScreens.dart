@@ -273,7 +273,7 @@ class _LoginScreensState extends State<LoginScreens> {
           email: email!, password: password!);
 
       Navigator.pushAndRemoveUntil<void>(context,
-        MaterialPageRoute<void>(builder: (BuildContext context) => HomeScreens(userCredential.user!.displayName)),
+        MaterialPageRoute<void>(builder: (BuildContext context) => HomeScreens(userCredential.user!.displayName,userCredential.user!.uid)),
         ModalRoute.withName('/'),
       );
 
@@ -285,14 +285,16 @@ class _LoginScreensState extends State<LoginScreens> {
   }
 
   Future SignInWithGoogle() async{
+
+    // await Firebase.initializeApp();
     await Firebase.initializeApp();
-    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final FirebaseAuth _auth = await FirebaseAuth.instance;
     final GoogleSignIn googleSignIn = GoogleSignIn();
     try{
       GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
       GoogleSignInAuthentication? googleSignInAuthentication =
       await googleSignInAccount?.authentication;
-      AuthCredential authCredential = GoogleAuthProvider.credential(
+      AuthCredential authCredential = await GoogleAuthProvider.credential(
         idToken: googleSignInAuthentication?.idToken,
         accessToken: googleSignInAuthentication?.accessToken,
       );
@@ -316,7 +318,7 @@ class _LoginScreensState extends State<LoginScreens> {
       if(result!=null)
       {
         Navigator.pushAndRemoveUntil<void>(context,
-          MaterialPageRoute<void>(builder: (BuildContext context) => HomeScreens(result.user!.displayName)),
+          MaterialPageRoute<void>(builder: (BuildContext context) => HomeScreens(result.user!.displayName,result.user!.uid)),
           ModalRoute.withName('/'),
         );
       }

@@ -8,11 +8,12 @@ import 'package:lock_up/Screens/TermsOfUse.dart';
 
 import 'JoinedActivitiesScreen.dart';
 import 'MyActivitiesScreen.dart';
+import 'ScanScreen.dart';
 import 'SettingsScreen.dart';
 
 class HomeScreens extends StatefulWidget {
-  String? UserName;
-  HomeScreens(this.UserName,{Key? key}) : super(key: key);
+  String ?UserName,uid;
+  HomeScreens(this.UserName,this.uid,{Key? key}) : super(key: key);
 
   @override
   State<HomeScreens> createState() => _HomeScreensState();
@@ -188,7 +189,23 @@ class _HomeScreensState extends State<HomeScreens> {
                                       FlatButton(onPressed: (){
                                         Navigator.pop(context);
                                       }, child: Text("Cancel")),
+                                      Expanded(
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: IconButton(
+                                            icon: Icon(Icons.qr_code_scanner), onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ScanScreen(widget.uid!)),
+                                            );
+                                          },
+                                          ),
+                                        ),
+                                      ),
                                     ],
+
                                   ),
                                 ),
 
@@ -222,7 +239,7 @@ class _HomeScreensState extends State<HomeScreens> {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => MyActivitiesScreen()));
+                    MaterialPageRoute(builder: (context) => MyActivitiesScreen(widget.uid!,widget.UserName!)));
               },
             ),
             ListTile(
@@ -234,7 +251,7 @@ class _HomeScreensState extends State<HomeScreens> {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => JoinedActivitiesScreen()));
+                    MaterialPageRoute(builder: (context) => JoinedActivitiesScreen(widget.uid!,widget.UserName!)));
               },
             ),
             ListTile(

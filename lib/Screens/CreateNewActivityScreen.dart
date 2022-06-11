@@ -5,7 +5,8 @@ import 'dart:math';
 import '../Models/ActivityModel.dart';
 
 class CreateNewActivityScreen extends StatefulWidget {
-  const CreateNewActivityScreen({Key? key}) : super(key: key);
+  String? uid;
+  CreateNewActivityScreen(this.uid,{Key? key}) : super(key: key);
 
   @override
   State<CreateNewActivityScreen> createState() => _CreateNewActivityScreenState();
@@ -171,7 +172,7 @@ class _CreateNewActivityScreenState extends State<CreateNewActivityScreen> {
                             databaseReference.once().then((value){
                               if(!value.snapshot.child(RandomID.toString()).exists)
                               {
-                                ActivityModel activity_model = ActivityModel(id: RandomID.toString(), name: name!, password: password!);
+                                ActivityModel activity_model = ActivityModel(id: RandomID.toString(), name: name!,manager:widget.uid, password: password!);
                                 databaseReference.child(RandomID.toString()).set(activity_model.toMap());
                               }
                             });

@@ -5,8 +5,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'Screens/SplashScreens.dart';
 
 void main() {
-  // Firebase.initializeApp();
-  runApp(const Main());
+  // Firebase.initializeApp().whenComplete((){
+    runApp(const Main());
+
 }
 
 class Main extends StatefulWidget {

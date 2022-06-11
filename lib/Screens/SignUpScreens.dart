@@ -20,7 +20,7 @@ class _SignUpScreensState extends State<SignUpScreens> {
   TextEditingController phoneController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmpasswordController = TextEditingController();
-  final databaseReference = FirebaseDatabase.instance.reference().child("Users");
+
 
   final formKey = new GlobalKey<FormState>();
 
@@ -234,20 +234,21 @@ class _SignUpScreensState extends State<SignUpScreens> {
     );
   }
   Future SignUpFunction()async{
-
     await Firebase.initializeApp();
+
+    final databaseReference =await FirebaseDatabase.instance.reference().child("Users");
 
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword
         (email: email!, password: password!);
 
-      UserModel users = UserModel(name: name!, email: email!, phone: phone!);
+      UserModel users = UserModel(name: "huzaifa", email: "huzaifa@gmail.com", phone: "0000000000");
 
       await databaseReference.child(userCredential.user!.uid).set(users.toMap());
 
       Navigator.pushAndRemoveUntil<void>(context,
-        MaterialPageRoute<void>(builder: (BuildContext context) => HomeScreens(userCredential.user!.displayName)),
+        MaterialPageRoute<void>(builder: (BuildContext context) => HomeScreens(userCredential.user!.displayName,userCredential.user!.uid)),
         ModalRoute.withName('/'),
       );
     } on FirebaseAuthException catch(error)

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AboutUs extends StatefulWidget {
   const AboutUs({Key? key}) : super(key: key);
@@ -9,13 +10,50 @@ class AboutUs extends StatefulWidget {
 }
 
 class _AboutUsState extends State<AboutUs> {
+
+
+  String? Language = "hello";
+
+  String AboutUs = "About Us";
+  String TeamMembers = "Team Members";
+  String RelatedToApp = "Some info related to this App";
+
+  void getSharedPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    Language = prefs.getString('Language');
+
+    if (Language == "English") {
+      setState(() async {
+
+        AboutUs = "About Us";
+        TeamMembers = "Team Members";
+        RelatedToApp = "Some info related to this App";
+
+
+      });
+    } else {
+      setState(() {
+        AboutUs = "עלינו ";
+        TeamMembers = "חברי צוות";
+        RelatedToApp = "קצת מידע הקשור לאפליקציה הזו";
+      });
+    }
+  }
+
+
+  @override
+  void initState() {
+    getSharedPrefs();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("About Us",style: TextStyle(fontWeight: FontWeight.bold),),
+          title: Text(AboutUs,style: TextStyle(fontWeight: FontWeight.bold),),
         ),
 
         body: SafeArea(
@@ -24,13 +62,13 @@ class _AboutUsState extends State<AboutUs> {
               Container(
                 margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                 width: double.infinity,
-                child: Center(child: Text("About Us",style: TextStyle(fontWeight: FontWeight.bold),)),
+                child: Center(child: Text(AboutUs,style: TextStyle(fontWeight: FontWeight.bold),)),
               ),
               Container(
                 margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: Align(
                     alignment: Alignment.topCenter,
-                    child: Text("Some info related to this App")),
+                    child: Text(RelatedToApp)),
               ),
               Expanded(
                 child: Align(

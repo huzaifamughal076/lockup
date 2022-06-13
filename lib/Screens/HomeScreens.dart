@@ -57,6 +57,10 @@ class _HomeScreensState extends State<HomeScreens> {
 
   String errorMessageActivityID = "Activity ID Required";
   String errorMessageActivityPassword = "Password Required";
+  String errorMessageActivityPasswordMatch = "Password Should be greater than 6 characters";
+
+  String AreYouSure = "Are you Sure";
+  String YouWantToDelete = "You want to Delete";
 
   @override
   void initState() {
@@ -66,51 +70,60 @@ class _HomeScreensState extends State<HomeScreens> {
     final prefs = await SharedPreferences.getInstance();
     Language = prefs.getString('Language');
     // Fluttertoast.showToast(msg: Language!);
+
     if (Language == "English") {
       setState(() async {
-        String WelcomeMessageText = "Welcome";
-        String RecentActivitiesText = "Recent Activities";
-        String JoinAnActivityText = "Join An Activity";
+         WelcomeMessageText = "Welcome";
+         RecentActivitiesText = "Recent Activities";
+         JoinAnActivityText = "Join An Activity";
 
-        String MyActivitiesText = "My Activities";
-        String JoinedActivitiesText = "Joined Activities";
-        String SettingsText = "Settings";
-        String AboutUsText = "About Us";
-        String TermsOfUseText = "Terms of Use";
-        String ContactUsText = "Contact Us";
-        String LogOutText = "Log Out";
+        JoinedActivitiesText = "Joined Activities";
+        MyActivitiesText = "My Activities";
+        SettingsText = "Settings";
+        AboutUsText = "About Us";
+        TermsOfUseText = "Terms of Use";
+        ContactUsText = "Contact Us";
+        LogOutText = "Log Out";
 
-        String ActivityIDText = "Activity ID";
-        String ActivityPasswordText = "Password";
-        String JoinText = "Join";
-        String CancelText = "Cancel";
+        ActivityIDText = "Activity ID";
+        ActivityPasswordText = "Password";
+        JoinText = "Join";
+        CancelText = "Cancel";
 
 
-        String errorMessageActivityID = "Activity ID Required";
-        String errorMessageActivityPassword = "Password Required";
+        errorMessageActivityID = "Activity ID Required";
+        errorMessageActivityPassword = "Password Required";
+        errorMessageActivityPasswordMatch = "Password Should be greater than 6 characters";
+
+        AreYouSure = "Are you Sure";
+        YouWantToDelete = "You want to Delete";
+
       });
     } else {
       setState(() {
-        String WelcomeMessageText = "Welcome";
-        String RecentActivitiesText = "Recent Activities";
-        String JoinAnActivityText = "Join An Activity";
+         WelcomeMessageText = "ברוך הבא";
+         RecentActivitiesText = "פעילויות אחרונות";
+         JoinAnActivityText = "הצטרף לפעילות";
 
-        String MyActivitiesText = "My Activities";
-        String JoinedActivitiesText = "Joined Activities";
-        String SettingsText = "Settings";
-        String AboutUsText = "About Us";
-        String TermsOfUseText = "Terms of Use";
-        String ContactUsText = "Contact Us";
-        String LogOutText = "Log Out";
+         MyActivitiesText = "הפעילויות שלי";
+         JoinedActivitiesText = "הצטרפו לפעילויות";
+         SettingsText = "הגדרות";
+         AboutUsText = "עלינו";
+         TermsOfUseText = "תנאי שימוש";
+         ContactUsText = "צור קשר";
+         LogOutText = "להתנתק";
 
-        String ActivityIDText = "Activity ID";
-        String ActivityPasswordText = "Password";
-        String JoinText = "Join";
-        String CancelText = "Cancel";
+         ActivityIDText = "מזהה פעילות";
+         ActivityPasswordText = "סיסמה";
+         JoinText = "לְהִצְטַרֵף";
+         CancelText = "לְבַטֵל";
 
+         errorMessageActivityID = "נדרש מזהה פעילות";
+         errorMessageActivityPassword = "סיסמה נדרשת";
+         errorMessageActivityPasswordMatch = "הסיסמה צריכה להיות יותר מ-6 תווים";
 
-        String errorMessageActivityID = "Activity ID Required";
-        String errorMessageActivityPassword = "Password Required";
+         AreYouSure = "האם אתה בטוח";
+         YouWantToDelete = "אתה רוצה למחוק";
       });
     }
   }
@@ -121,7 +134,7 @@ class _HomeScreensState extends State<HomeScreens> {
       appBar: AppBar(
         title: Align(
             alignment: AlignmentDirectional.centerEnd,
-            child: Text(widget.UserName!+ " Welcome ")),
+            child: Text(widget.UserName! +" "+WelcomeMessageText)),
       ),
       body:
       SafeArea(
@@ -153,7 +166,7 @@ class _HomeScreensState extends State<HomeScreens> {
               child: Align(
                   alignment: Alignment.topRight,
                   child: Text(
-                    "Recent Activities",
+                    RecentActivitiesText,
                     style: TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 25),
                   )),
@@ -191,7 +204,7 @@ class _HomeScreensState extends State<HomeScreens> {
                                     validator: (ActivityIdController)
                                     {
                                       if(ActivityIdController!.isEmpty||ActivityIdController==null) {
-                                        return "Activity ID Required";
+                                        return errorMessageActivityID;
                                       }else
                                       {
                                         activity_ID=ActivityIdController;
@@ -200,8 +213,8 @@ class _HomeScreensState extends State<HomeScreens> {
                                     },
 
                                     decoration: InputDecoration(
-                                      hintText: "Activity ID",
-                                      label: Text("Activity ID"),
+                                      hintText: ActivityIDText,
+                                      label: Text(ActivityIDText),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
@@ -217,9 +230,9 @@ class _HomeScreensState extends State<HomeScreens> {
                                     {
                                       if(ActivityPasswordController!.isEmpty||
                                           ActivityPasswordController==null) {
-                                        return "Password Required";
+                                        return errorMessageActivityPassword;
                                       }else if(ActivityPasswordController.length<6){
-                                        return "Password should be greater than 6 characters";
+                                        return errorMessageActivityPasswordMatch;
                                       } else
                                       {
                                         activity_Password=ActivityPasswordController;
@@ -227,8 +240,8 @@ class _HomeScreensState extends State<HomeScreens> {
                                       }
                                     },
                                     decoration: InputDecoration(
-                                      hintText: "Password",
-                                      label: Text("Password"),
+                                      hintText: ActivityPasswordText,
+                                      label: Text(ActivityPasswordText),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
@@ -286,7 +299,7 @@ class _HomeScreensState extends State<HomeScreens> {
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
-                                                          JoinedActivitiesScreen(widget.uid!,widget.UserName!)),
+                                                          JoinedActivitiesScreen(widget.uid!,widget.UserName!,JoinedActivitiesText)),
                                                 );
                                                 Fluttertoast.showToast(msg: "You Added");
 
@@ -308,11 +321,11 @@ class _HomeScreensState extends State<HomeScreens> {
                                         }
 
 
-                                      }, child: Text("Join")),
+                                      }, child: Text(JoinText)),
 
                                       FlatButton(onPressed: (){
                                         Navigator.pop(context);
-                                      }, child: Text("Cancel")),
+                                      }, child: Text(CancelText)),
                                       Expanded(
                                         child: Align(
                                           alignment: Alignment.centerRight,
@@ -345,7 +358,7 @@ class _HomeScreensState extends State<HomeScreens> {
               },
             );
           },
-          label: const Text('Join an Activity')
+          label: Text(JoinAnActivityText)
       ),
       //BUTTON LOCATION
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
@@ -355,8 +368,8 @@ class _HomeScreensState extends State<HomeScreens> {
         child: Drawer(
           child: ListView(padding: EdgeInsets.zero, children: [
             ListTile(
-              title: const Text(
-                'My Activities',
+              title: Text(
+                MyActivitiesText,
                 textAlign: TextAlign.end,
               ),
               trailing: Icon(Icons.add_business_outlined),
@@ -367,20 +380,20 @@ class _HomeScreensState extends State<HomeScreens> {
               },
             ),
             ListTile(
-              title: const Text(
-                'Joined Activities',
+              title: Text(
+                JoinedActivitiesText,
                 textAlign: TextAlign.end,
               ),
               trailing: Icon(Icons.add_box_outlined),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => JoinedActivitiesScreen(widget.uid!,widget.UserName!)));
+                    MaterialPageRoute(builder: (context) => JoinedActivitiesScreen(widget.uid!,widget.UserName!,JoinedActivitiesText)));
               },
             ),
             ListTile(
-              title: const Text(
-                'Settings',
+              title: Text(
+                SettingsText,
                 textAlign: TextAlign.end,
               ),
               trailing: Icon(Icons.settings),
@@ -391,8 +404,8 @@ class _HomeScreensState extends State<HomeScreens> {
               },
             ),
             ListTile(
-              title: const Text(
-                'About Us',
+              title: Text(
+                AboutUsText,
                 textAlign: TextAlign.end,
               ),
               trailing: Icon(Icons.account_circle_outlined),
@@ -403,8 +416,8 @@ class _HomeScreensState extends State<HomeScreens> {
               },
             ),
             ListTile(
-              title: const Text(
-                'Terms of Use',
+              title: Text(
+                TermsOfUseText,
                 textAlign: TextAlign.end,
               ),
               trailing: Icon(Icons.add_moderator),
@@ -415,8 +428,8 @@ class _HomeScreensState extends State<HomeScreens> {
               },
             ),
             ListTile(
-              title: const Text(
-                'Contact Us',
+              title: Text(
+                  ContactUsText,
                 textAlign: TextAlign.end,
               ),
               trailing: Icon(Icons.contact_mail),
@@ -427,7 +440,7 @@ class _HomeScreensState extends State<HomeScreens> {
               },
             ),
             ListTile(
-              title: Text('Log Out',
+              title: Text(LogOutText,
                 textAlign: TextAlign.end,),
               trailing: Icon(Icons.exit_to_app_outlined),
               onTap: (){
@@ -435,12 +448,13 @@ class _HomeScreensState extends State<HomeScreens> {
                   context: context,
                   barrierDismissible: false,
                   builder: (BuildContext context) => new CupertinoAlertDialog(
-                    title: new Text("Are you Sure",style: TextStyle(fontSize: 19,color: Colors.black)),
-                    content: new Text("You want to Delete."),
+                    title: Text(AreYouSure,style: TextStyle(fontSize: 19,color: Colors.black)),
+
+                    content: Text(YouWantToDelete),
                     actions: [
                       CupertinoDialogAction(isDefaultAction: true,
                           onPressed: ()
-                          {Navigator.pop(context);}, child: new Text("Close")),
+                          {Navigator.pop(context);}, child: new Text(CancelText)),
 
 
                       CupertinoDialogAction(isDefaultAction: true,
@@ -451,7 +465,7 @@ class _HomeScreensState extends State<HomeScreens> {
                               MaterialPageRoute<dynamic>(builder: (BuildContext context) => LoginScreens()
                               ),(route)=>false,
                             );
-                          }, child: new Text("Log Out"))
+                          }, child: new Text(LogOutText))
                     ],
                   ),
                 );

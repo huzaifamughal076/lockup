@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 
 import '../Models/ActivityModel.dart';
@@ -25,8 +26,64 @@ class _CreateNewActivityScreenState extends State<CreateNewActivityScreen> {
 
   final databaseReference = FirebaseDatabase.instance.reference().child("Activities");
 
-
   final formKey = new GlobalKey<FormState>();
+
+  String? Language = "hello";
+
+  String CreateNewActivityText = "Create New Activity";
+  String ActivityNameText = "Activity Name";
+  String ActivityPasswordText = "Password";
+  String ActivityConfirmPasswordText = "Confirm Password";
+  String CancelText = "Cancel";
+  String CreateActivity = "Create Activity";
+
+  String errorMessageActivityName = "Activity Name Required";
+  String errorMessageActivityPassword = "Password Required";
+  String errorMessageActivityPasswordMatch = "Password Should be greater than 6 characters";
+  String errorMessageActivityConfirmPassword= "Confirm Password Required";
+  String errorMessageActivityConfirmPasswordMatch= "Confirm Password does not match";
+
+
+  void getSharedPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    Language = prefs.getString('Language');
+    // Fluttertoast.showToast(msg: Language!);
+
+    if (Language == "English") {
+      setState(() async {
+        CreateNewActivityText = "Create New Activity";
+        ActivityNameText = "Activity Name";
+        ActivityPasswordText = "Password";
+        ActivityConfirmPasswordText = "Confirm Password";
+        CancelText = "Cancel";
+        CreateActivity = "Create Activity";
+
+        errorMessageActivityName = "Activity Name Required";
+        errorMessageActivityPassword = "Password Required";
+        errorMessageActivityPasswordMatch = "Password Should be greater than 6 characters";
+        errorMessageActivityConfirmPassword= "Confirm Password Required";
+        errorMessageActivityConfirmPasswordMatch= "Confirm Password does not match"; });
+    } else {
+      setState(() {
+        CreateNewActivityText = "צור פעילות חדשה";
+        ActivityNameText = "שם הפעילות";
+        ActivityPasswordText = "סיסמה";
+        ActivityConfirmPasswordText = "אשר סיסמה";
+        CancelText = "לְבַטֵל";
+        CreateActivity = "צור פעילות";
+
+        errorMessageActivityName = "נדרש שם פעילות";
+        errorMessageActivityPassword = "סיסמה נדרשת";
+        errorMessageActivityPasswordMatch = "הסיסמה צריכה להיות יותר מ-6 תווים";
+        errorMessageActivityConfirmPassword= "אשר סיסמה נדרשת";
+        errorMessageActivityConfirmPasswordMatch= "אשר שהסיסמה אינה תואמת";
+
+      });
+    }
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +91,7 @@ class _CreateNewActivityScreenState extends State<CreateNewActivityScreen> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          title: Align(
-              alignment: Alignment.centerLeft,
-              child: Text("Create New Activity",)),
+          title: Text(CreateNewActivityText),
         ),
         body: Form(
           key: formKey,
@@ -51,7 +106,7 @@ class _CreateNewActivityScreenState extends State<CreateNewActivityScreen> {
                     {
                       if(ActivityNameController!.isEmpty||ActivityNameController==null)
                       {
-                        return "Activity Name Required";
+                        return errorMessageActivityName;
                       }
                       else
                       {
@@ -61,8 +116,8 @@ class _CreateNewActivityScreenState extends State<CreateNewActivityScreen> {
                     },
 
                     decoration: InputDecoration(
-                      hintText: "Activity Name",
-                      label: Text("Activity Name"),
+                      hintText: ActivityNameText,
+                      label: Text(ActivityNameText),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -80,9 +135,9 @@ class _CreateNewActivityScreenState extends State<CreateNewActivityScreen> {
                     {
                       if(passwordController!.isEmpty||passwordController==null)
                       {
-                        return "Password Required";
+                        return ActivityPasswordText;
                       }else if(passwordController.length<6){
-                        return "Password should be greater than 6 characters";
+                        return errorMessageActivityPasswordMatch ;
                       }
                       else
                       {
@@ -91,8 +146,8 @@ class _CreateNewActivityScreenState extends State<CreateNewActivityScreen> {
                       }
                     },
                     decoration: InputDecoration(
-                      hintText: "Password",
-                      label: Text("Password"),
+                      hintText: ActivityPasswordText,
+                      label: Text(ActivityPasswordText),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -124,9 +179,9 @@ class _CreateNewActivityScreenState extends State<CreateNewActivityScreen> {
                     {
                       if(ConfirmPasswordController!.isEmpty||ConfirmPasswordController==null)
                       {
-                        return "Confirm Password Required";
+                        return errorMessageActivityConfirmPassword;
                       }else if(ConfirmPasswordController!=password){
-                        return "Confirm Password does not matched";
+                        return errorMessageActivityConfirmPasswordMatch;
 
                       }
                       else
@@ -136,8 +191,8 @@ class _CreateNewActivityScreenState extends State<CreateNewActivityScreen> {
                       }
                     },
                     decoration: InputDecoration(
-                      hintText: "ConfirmPassword",
-                      label: Text("Confirm Password"),
+                      hintText: ActivityConfirmPasswordText,
+                      label: Text(ActivityConfirmPasswordText),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -190,13 +245,13 @@ class _CreateNewActivityScreenState extends State<CreateNewActivityScreen> {
                           }
 
 
-                        }, child: Text("Create Activity")),
+                        }, child: Text(CreateActivity)),
                       ),
 
                       Expanded(
                         child: FlatButton(onPressed: (){
                           Navigator.pop(context);
-                        }, child: Text("Cancel")),
+                        }, child: Text(CancelText)),
                       ),
                     ],
                   ),

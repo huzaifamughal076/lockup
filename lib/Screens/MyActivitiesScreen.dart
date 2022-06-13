@@ -39,6 +39,105 @@ class _MyActivitiesScreenState extends State<MyActivitiesScreen> {
 
   final GlobalKey<LiquidPullToRefreshState> _refreshIndicatorKey = GlobalKey<LiquidPullToRefreshState>();
 
+
+  String? Language = "hello";
+
+  String MyActivitiesText = "My Activities";
+
+  String ActivityNameText = "Activity ID";
+  String ActivityPasswordText = "Password";
+  String ActivityConfirmPasswordText = "Confirm Password";
+
+  String errorMessageActivityName = "Activity Name Required";
+  String errorMessageActivityID = "Activity ID Required";
+  String errorMessageActivityPassword = "Password Required";
+  String errorMessageActivityPasswordMatch = "Password Should be greater than 6 characters";
+  String errorMessageActivityConfirmPassword= "Confirm Password Required";
+  String errorMessageActivityConfirmPasswordMatch= "Confirm Password does not match";
+
+  String AreYouSure = "Are you Sure";
+  String YouWantToDelete = "You want to Delete";
+
+  String NoActivityFound = "No Activity Found";
+  String DeleteSuccessfullyText = "Delete Successfully";
+  String ActivityCreatedBY = "Activity Created By: ";
+  String Members = "Members: ";
+  String CancelText = "Cancel";
+  String DeleteText = "Delete";
+  String ActivityID = "Activity ID: ";
+  String ActivityPass = "Activity Pass: ";
+
+  void getSharedPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    Language = prefs.getString('Language');
+    // Fluttertoast.showToast(msg: Language!);
+
+    if (Language == "English") {
+      setState(() async {
+         MyActivitiesText = "My Activities";
+
+         ActivityNameText = "Activity Name";
+         ActivityPasswordText = "Password";
+         ActivityConfirmPasswordText = "Confirm Password";
+         CancelText = "Cancel";
+
+         errorMessageActivityName = "Activity Name Required";
+         errorMessageActivityID = "Activity ID Required";
+         errorMessageActivityPassword = "Password Required";
+         errorMessageActivityPasswordMatch = "Password Should be greater than 6 characters";
+         errorMessageActivityConfirmPassword= "Confirm Password Required";
+         errorMessageActivityConfirmPasswordMatch= "Confirm Password does not match";
+
+         NoActivityFound = "No Activity Found";
+         DeleteSuccessfullyText = "Delete Successfully";
+         ActivityCreatedBY = "Activity Created By: ";
+
+         AreYouSure = "Are you Sure";
+         YouWantToDelete = "You want to Delete";
+
+         NoActivityFound = "No Activity Found";
+         Members = "Members: ";
+         DeleteText = "Delete";
+         ActivityID = "Activity ID: ";
+         ActivityPass = "Activity Pass: ";
+
+      });
+    } else {
+      setState(() {
+        MyActivitiesText = "הפעילויות שלי";
+
+        ActivityNameText = "שם הפעילות";
+        ActivityPasswordText = "סיסמה";
+        ActivityConfirmPasswordText = "אשר סיסמה";
+
+        errorMessageActivityName = "נדרש שם פעילות";
+        errorMessageActivityID = "נדרש מזהה פעילות";
+        errorMessageActivityPassword = "סיסמה נדרשת";
+        errorMessageActivityPasswordMatch = "הסיסמה צריכה להיות יותר מ-6 תווים";
+        errorMessageActivityConfirmPassword= "אשר סיסמה נדרשת";
+        errorMessageActivityConfirmPasswordMatch= "אשר שהסיסמה אינה תואמת";
+
+        NoActivityFound = "לא נמצאה פעילות";
+        DeleteSuccessfullyText = "מחק בהצלחה";
+        ActivityCreatedBY = " פעילות שנוצרה על ידי: ";
+
+        AreYouSure = "האם אתה בטוח";
+        YouWantToDelete = "אתה רוצה למחוק";
+
+        NoActivityFound = "לא נמצאה פעילות";
+        Members = " חברים: ";
+        DeleteText = "לִמְחוֹק";
+        CancelText = "לְבַטֵל";
+        ActivityID = " מזהה פעילות: ";
+        ActivityPass = " כרטיס פעילות: ";
+      });
+    }
+  }
+
+
+
+
+
   Future _handleRefresh()async {
     _counter --;
     await getAllActivities();
@@ -46,6 +145,7 @@ class _MyActivitiesScreenState extends State<MyActivitiesScreen> {
 
   @override
   void initState() {
+    getSharedPrefs();
     getAllActivities();
     super.initState();
   }
@@ -93,7 +193,7 @@ class _MyActivitiesScreenState extends State<MyActivitiesScreen> {
     {
       if(myActivities.length==0)
       {
-        Fluttertoast.showToast(msg: "No Activity Found");
+        Fluttertoast.showToast(msg: NoActivityFound);
         _counter ++;
       }
     }
@@ -134,7 +234,7 @@ class _MyActivitiesScreenState extends State<MyActivitiesScreen> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
           appBar: AppBar(
-            title: Text('My Activities'),
+            title: Text(MyActivitiesText),
           ),
           floatingActionButton: FloatingActionButton(
             child: Icon(Icons.add),
@@ -217,7 +317,7 @@ class _MyActivitiesScreenState extends State<MyActivitiesScreen> {
                                               child: Align(
                                                 alignment: Alignment.centerRight,
                                                 child: Text(
-                                                    "Members : " +
+                                                    Members +
                                                         NumberOfMembers[index]
                                                             .toString() ??
                                                         "0",
@@ -236,25 +336,25 @@ class _MyActivitiesScreenState extends State<MyActivitiesScreen> {
                                                     barrierDismissible: false,
                                                     builder: (BuildContext context) =>
                                                     new CupertinoAlertDialog(
-                                                      title: new Text("Are you Sure",
+                                                      title: new Text(AreYouSure,
                                                           style: TextStyle(
                                                               fontSize: 19,
                                                               color: Colors.black)),
                                                       content: new Text(
-                                                          "You want to Delete."),
+                                                          YouWantToDelete),
                                                       actions: [
                                                         CupertinoDialogAction(
                                                             isDefaultAction: true,
                                                             onPressed: () {
                                                               Navigator.pop(context);
                                                             },
-                                                            child: new Text("Close")),
+                                                            child: new Text(CancelText)),
                                                         CupertinoDialogAction(
                                                             isDefaultAction: true,
                                                             onPressed: () {
                                                               Fluttertoast.showToast(
                                                                   msg:
-                                                                  "Deleted Successfully.");
+                                                                  DeleteSuccessfullyText);
                                                               Navigator.pop(context);
                                                               myActivities
                                                                   .removeAt(index -1);
@@ -263,7 +363,7 @@ class _MyActivitiesScreenState extends State<MyActivitiesScreen> {
                                                                   index -1]);
 
                                                             },
-                                                            child: new Text("Delete"))
+                                                            child: new Text(DeleteText))
                                                       ],
                                                     ),
                                                   );
@@ -272,11 +372,11 @@ class _MyActivitiesScreenState extends State<MyActivitiesScreen> {
                                               IconButton(
                                                 icon: Icon(Icons.share),
                                                 onPressed: () {
-                                                  Share.share("Activity Created By: " +
+                                                  Share.share(ActivityCreatedBY +
                                                       widget.userName +
-                                                      "\n\nActivity ID: " +
+                                                      "\n\n"+ActivityID +
                                                       currentItem.id! +
-                                                      "\nActivity pass: " +
+                                                      "\n"+ActivityPass +
                                                       currentItem.password!);
                                                 },
                                               ),

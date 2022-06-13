@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ContactUs extends StatefulWidget {
   const ContactUs({Key? key}) : super(key: key);
@@ -9,6 +10,60 @@ class ContactUs extends StatefulWidget {
 }
 
 class _ContactUsState extends State<ContactUs> {
+
+
+  String? Language = "hello";
+
+  String ContactUs = "Contact Us";
+  String EmailHintMessage = "Email";
+  String SubjectHintMessage = "Subject";
+  String MessageHintMessage = "Message";
+  String SendText = "Send";
+
+  String errorEmailRequired = "Email Required";
+  String errorSubjectRequired = "Subject Required";
+  String errorMessageRequired = "Message Required";
+
+  void getSharedPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    Language = prefs.getString('Language');
+
+    if (Language == "English") {
+      setState(() async {
+
+        ContactUs = "Contact Us";
+        EmailHintMessage = "Email";
+        SubjectHintMessage = "Subject";
+        MessageHintMessage = "Message";
+        SendText = "Send";
+
+        errorEmailRequired = "Email Required";
+        errorSubjectRequired = "Subject Required";
+        errorMessageRequired = "Message Required";
+
+      });
+    } else {
+      setState(() {
+        ContactUs = "צור קשר";
+        EmailHintMessage = "אימייל";
+        SubjectHintMessage = "נושא";
+        MessageHintMessage = "הוֹדָעָה";
+        SendText = "לִשְׁלוֹחַ";
+
+        errorEmailRequired = "מייל (דרוש";
+        errorSubjectRequired = "נושא חובה";
+        errorMessageRequired = "דרושה הודעה";
+
+      });
+    }
+  }
+
+
+  @override
+  void initState() {
+    getSharedPrefs();
+  }
+
 
   late GoogleMapController mapController;
 
@@ -33,7 +88,7 @@ class _ContactUsState extends State<ContactUs> {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
-            title: Text("Contact Us"),
+            title: Text(ContactUs),
           ),
           body:  SafeArea(
             child: SingleChildScrollView(
@@ -74,7 +129,7 @@ class _ContactUsState extends State<ContactUs> {
 
                           Container(
                               margin: EdgeInsets.symmetric(vertical: 10),
-                              child: Text("Contact Us",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),)),
+                              child: Text(ContactUs,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),)),
 
                           Container(
                             margin: EdgeInsets.fromLTRB(10,0,10,0),
@@ -83,7 +138,7 @@ class _ContactUsState extends State<ContactUs> {
                                 if(emailController!.isEmpty ||
                                     emailController == null)
                                   {
-                                    return "Email Required";
+                                    return errorEmailRequired;
                                   }
                                 else{
                                   email = emailController;
@@ -91,8 +146,8 @@ class _ContactUsState extends State<ContactUs> {
                                 }
                               },
                               decoration: InputDecoration(
-                                hintText: "Email",
-                                label: Text("Email"),
+                                hintText: EmailHintMessage,
+                                label: Text(EmailHintMessage),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -109,7 +164,7 @@ class _ContactUsState extends State<ContactUs> {
                                 if(subjectController!.isEmpty ||
                                     subjectController == null)
                                   {
-                                    return "Subject Required";
+                                    return errorSubjectRequired;
                                   }
                                 else{
                                   subject = subjectController;
@@ -117,8 +172,8 @@ class _ContactUsState extends State<ContactUs> {
                                 }
                               },
                               decoration: InputDecoration(
-                                hintText: "Subject",
-                                label: Text("Subject"),
+                                hintText: SubjectHintMessage,
+                                label: Text(SubjectHintMessage),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -134,7 +189,7 @@ class _ContactUsState extends State<ContactUs> {
                                 if(messageController!.isEmpty ||
                                     messageController == null)
                                 {
-                                  return "Subject Required";
+                                  return errorMessageRequired;
                                 }
                                 else{
                                   message = messageController;
@@ -142,8 +197,8 @@ class _ContactUsState extends State<ContactUs> {
                                 }
                               },
                               decoration: InputDecoration(
-                                hintText: "Message",
-                                label: Text("Message"),
+                                hintText: MessageHintMessage,
+                                label: Text(MessageHintMessage),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -159,11 +214,46 @@ class _ContactUsState extends State<ContactUs> {
                   SizedBox(
                     height: 50,
                   ),
-                  ElevatedButton.icon(
-                      onPressed: (){
+                  Container(
+                    margin: EdgeInsets.fromLTRB(10, 5, 0, 0),
+                    child: Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          RaisedButton(
+                              padding:
+                              const EdgeInsets.fromLTRB(30, 20, 30, 20),
+                              color: Color(0xFF002d56),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                  BorderRadius.all(Radius.circular(16.0))),
+                              onPressed: () {
+                                if (formkey.currentState != null &&
+                                    formkey.currentState!.validate()) {
 
-                      }, icon: Icon(Icons.send,color: Colors.white,textDirection: TextDirection.ltr),
-                      label: Text("Send",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),)
+                                }
+                              },
+                              child: Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    SendText,
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                    child: Icon(
+                                      Icons.send,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              )),
+                        ],
+                      ),
+                    ),
                   ),
                   SizedBox(
                     height: 50,

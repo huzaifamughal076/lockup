@@ -321,13 +321,19 @@ class _LoginScreensState extends State<LoginScreens> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
-                            child: Image.asset(
-                              'assets/images/facebookicon.png',
-                              width: 35,
-                              height: 35,
+                          GestureDetector(
+                            child: Container(
+                              margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                              child: Image.asset(
+                                'assets/images/facebookicon.png',
+                                width: 35,
+                                height: 35,
+                              ),
                             ),
+                            onTap: (){
+
+
+                            },
                           ),
 
                           Container(

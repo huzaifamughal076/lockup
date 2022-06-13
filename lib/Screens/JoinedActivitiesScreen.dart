@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/ActivityModel.dart';
 
 class JoinedActivitiesScreen extends StatefulWidget {
-  final String uid, username;
+  final String uid, username,joinedName;
 
-  const JoinedActivitiesScreen(this.uid, this.username, {Key? key}) : super(key: key);
+  const JoinedActivitiesScreen(this.uid, this.username,this.joinedName, {Key? key}) : super(key: key);
 
   @override
   State<JoinedActivitiesScreen> createState() => _JoinedActivitiesScreenState();
@@ -24,21 +25,28 @@ class _JoinedActivitiesScreenState extends State<JoinedActivitiesScreen> {
   List<String> MatchedActivtiyId = [];
   List<ActivityModel> ActivtiyDetail = [];
   List<int> NumberOfMembers = [];
+
+  String? Language = "hello";
+
+  String ActivityNameText = "Joined Activities";
+  String Members = "Members: ";
+
+
   var test = FirebaseDatabase.instance.reference().child("Activities");
 
   bool viewVisible = false;
 
   Future getAllActivities() async {
-    try {
-      await test.once().then((value) {
-        allActivities.clear();
-        ActivtiyId.clear();
-        MatchedActivtiyId.clear();
-        for (var id in value.snapshot.children) {
-          ActivtiyId.add(id.key.toString());
-        }
-      });
-
+    // final databaseReference =
+    // await FirebaseDatabase.instance.reference().child("Activities");
+    await test.once().then((value) {
+      allActivities.clear();
+      ActivtiyId.clear();
+      MatchedActivtiyId.clear();
+      for (var id in value.snapshot.children) {
+        ActivtiyId.add(id.key.toString());
+      }
+    });
     print(ActivtiyId.length);
 
     for (int i = 0; i < ActivtiyId.length; i++) {
@@ -55,70 +63,65 @@ class _JoinedActivitiesScreenState extends State<JoinedActivitiesScreen> {
 
     await getJoinedActivityDetail();
     await getMembersLength();
-
-    }on FirebaseAuthException catch(error)
-    {
-      Fluttertoast.showToast(msg: error.message.toString());
-    }
+    await getSharedPrefs();
   }
 
   getMembersLength() async {
     int count = 0;
-    try {
-      NumberOfMembers.clear();
-      for (int i = 0; i < MatchedActivtiyId.length; i++) {
-        await test.child(MatchedActivtiyId[i]).once().then((value) {
-          if (value.snapshot
-              .child("Members")
-              .exists) {
-            count = value.snapshot
-                .child("Members")
-                .children
-                .length;
-            NumberOfMembers.add(count);
-          } else {
-            NumberOfMembers.add(0);
-          }
-        });
-      }
-    }on FirebaseAuthException catch(error)
-    {
-      Fluttertoast.showToast(msg: error.message.toString());
+    NumberOfMembers.clear();
+    for (int i = 0; i < MatchedActivtiyId.length; i++) {
+      await test.child(MatchedActivtiyId[i]).once().then((value) {
+        if (value.snapshot.child("Members").exists) {
+          count = value.snapshot.child("Members").children.length;
+          NumberOfMembers.add(count);
+        } else {
+          NumberOfMembers.add(0);
+        }
+      });
     }
   }
 
   getJoinedActivityDetail() async {
-    try {
-      ActivtiyDetail.clear();
-      for (int i = 0; i < MatchedActivtiyId.length; i++) {
-        String Name, Manager, pass;
-        await test.child(MatchedActivtiyId[i]).once().then((value) {
-          Name = value.snapshot
-              .child("name")
-              .value
-              .toString();
-          Manager = value.snapshot
-              .child("manager")
-              .value
-              .toString();
-          pass = value.snapshot
-              .child("password")
-              .value
-              .toString();
+    ActivtiyDetail.clear();
+    for (int i = 0; i < MatchedActivtiyId.length; i++) {
+      String Name, Manager, pass;
+      await test.child(MatchedActivtiyId[i]).once().then((value) {
+        Name = value.snapshot.child("name").value.toString();
+        Manager = value.snapshot.child("manager").value.toString();
+        pass = value.snapshot.child("password").value.toString();
 
-          ActivityModel activityModel = ActivityModel(
-              name: Name,
-              manager: Manager,
-              password: pass,
-              id: MatchedActivtiyId[i]);
-          ActivtiyDetail.add(activityModel);
-        });
-      }
-    }on FirebaseAuthException catch(error)
-    {
-      Fluttertoast.showToast(msg: error.message.toString());
+        ActivityModel activityModel = ActivityModel(
+            name: Name,
+            manager: Manager,
+            password: pass,
+            id: MatchedActivtiyId[i]);
+        ActivtiyDetail.add(activityModel);
+      });
     }
   }
+
+
+  Future getSharedPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    Language = prefs.getString('Language');
+
+    if (Language == "English") {
+      setState(() async {
+
+        ActivityNameText = "Joined Activities";
+        Members = "Members: ";
+
+      });
+    } else {
+      setState(() {
+        ActivityNameText = "הצטרפו לפעילויות";
+        Members = "חברים:";
+      });
+    }
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -126,24 +129,22 @@ class _JoinedActivitiesScreenState extends State<JoinedActivitiesScreen> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Joined Activities'),
+          title: Text(ActivityNameText),
         ),
-        body: FutureBuilder(
-            future: getAllActivities(),
-            builder: (context, projectSnap) {
-              if (projectSnap.connectionState == ConnectionState.none &&
-                  projectSnap.hasData == null) {
-                //print('project snapshot data is: ${projectSnap.data}');
-                return Container(
-                  margin: EdgeInsets.only(top: 12),
-                  child: Align(
-                      alignment: Alignment.center,
-                      child: Text('You have no active activities',style: TextStyle(color: Colors.black),)),
-                );
-              } else {
-                return Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: ListView.builder(
+        body: Directionality(
+          textDirection: TextDirection.ltr,
+          child: FutureBuilder(
+              future: getAllActivities(),
+              builder: (context, projectSnap) {
+                if (projectSnap.connectionState == ConnectionState.none &&
+                    projectSnap.hasData == null) {
+                  //print('project snapshot data is: ${projectSnap.data}');
+                  return Container(
+                    margin: EdgeInsets.only(top: 12),
+                    child: Text('You have no active activities'),
+                  );
+                } else {
+                  return ListView.builder(
                     scrollDirection: Axis.vertical,
                     itemCount: ActivtiyDetail.length,
                     itemBuilder: (context, index) {
@@ -194,8 +195,7 @@ class _JoinedActivitiesScreenState extends State<JoinedActivitiesScreen> {
                                       margin: EdgeInsets.only(right: 20),
                                       child: Align(
                                         alignment: Alignment.centerRight,
-                                        child: Text(
-                                            "Members : " +
+                                        child: Text(Members +
                                                 NumberOfMembers[index]
                                                     .toString() ??
                                                 "0",
@@ -225,23 +225,12 @@ class _JoinedActivitiesScreenState extends State<JoinedActivitiesScreen> {
                           ),
                         );
                     },
-                  ),
-                );
-              }
-            }),
+                  );
+                }
+              }),
+        ),
       ),
     );
   }
 
-  void showWidget() {
-    setState(() {
-      viewVisible = true;
-    });
-  }
-
-  void hideWidget() {
-    setState(() {
-      viewVisible = false;
-    });
-  }
 }

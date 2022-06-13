@@ -1,10 +1,13 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lock_up/Screens/AboutUs.dart';
 import 'package:lock_up/Screens/ContactUs.dart';
 import 'package:lock_up/Screens/LoginScreens.dart';
 import 'package:lock_up/Screens/TermsOfUse.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'JoinedActivitiesScreen.dart';
 import 'MyActivitiesScreen.dart';
@@ -24,19 +27,101 @@ class _HomeScreensState extends State<HomeScreens> {
   bool _passwordVisible = false;
 
   String? activity_ID,activity_Password;
+  var activityList = [];
 
   TextEditingController ActivityIdController = TextEditingController();
   TextEditingController ActivityPasswordController = TextEditingController();
 
+  DatabaseReference databaseReference = FirebaseDatabase.instance.reference().child("Activities");
+
   final formKey = new GlobalKey<FormState>();
+  String? Language = "hello";
+
+  String WelcomeMessageText = "Welcome";
+  String RecentActivitiesText = "Recent Activities";
+  String JoinAnActivityText = "Join An Activity";
+
+  String MyActivitiesText = "My Activities";
+  String JoinedActivitiesText = "Joined Activities";
+  String SettingsText = "Settings";
+  String AboutUsText = "About Us";
+  String TermsOfUseText = "Terms of Use";
+  String ContactUsText = "Contact Us";
+  String LogOutText = "Log Out";
+
+  String ActivityIDText = "Activity ID";
+  String ActivityPasswordText = "Password";
+  String JoinText = "Join";
+  String CancelText = "Cancel";
+
+
+  String errorMessageActivityID = "Activity ID Required";
+  String errorMessageActivityPassword = "Password Required";
+
+  @override
+  void initState() {
+    getSharedPrefs();
+  }
+  void getSharedPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    Language = prefs.getString('Language');
+    // Fluttertoast.showToast(msg: Language!);
+    if (Language == "English") {
+      setState(() async {
+        String WelcomeMessageText = "Welcome";
+        String RecentActivitiesText = "Recent Activities";
+        String JoinAnActivityText = "Join An Activity";
+
+        String MyActivitiesText = "My Activities";
+        String JoinedActivitiesText = "Joined Activities";
+        String SettingsText = "Settings";
+        String AboutUsText = "About Us";
+        String TermsOfUseText = "Terms of Use";
+        String ContactUsText = "Contact Us";
+        String LogOutText = "Log Out";
+
+        String ActivityIDText = "Activity ID";
+        String ActivityPasswordText = "Password";
+        String JoinText = "Join";
+        String CancelText = "Cancel";
+
+
+        String errorMessageActivityID = "Activity ID Required";
+        String errorMessageActivityPassword = "Password Required";
+      });
+    } else {
+      setState(() {
+        String WelcomeMessageText = "Welcome";
+        String RecentActivitiesText = "Recent Activities";
+        String JoinAnActivityText = "Join An Activity";
+
+        String MyActivitiesText = "My Activities";
+        String JoinedActivitiesText = "Joined Activities";
+        String SettingsText = "Settings";
+        String AboutUsText = "About Us";
+        String TermsOfUseText = "Terms of Use";
+        String ContactUsText = "Contact Us";
+        String LogOutText = "Log Out";
+
+        String ActivityIDText = "Activity ID";
+        String ActivityPasswordText = "Password";
+        String JoinText = "Join";
+        String CancelText = "Cancel";
+
+
+        String errorMessageActivityID = "Activity ID Required";
+        String errorMessageActivityPassword = "Password Required";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: Text("Welcome "+ widget.UserName!)),
+            alignment: AlignmentDirectional.centerEnd,
+            child: Text(widget.UserName!+ " Welcome ")),
       ),
       body:
       SafeArea(
@@ -133,7 +218,9 @@ class _HomeScreensState extends State<HomeScreens> {
                                       if(ActivityPasswordController!.isEmpty||
                                           ActivityPasswordController==null) {
                                         return "Password Required";
-                                      }else
+                                      }else if(ActivityPasswordController.length<6){
+                                        return "Password should be greater than 6 characters";
+                                      } else
                                       {
                                         activity_Password=ActivityPasswordController;
                                         return null;
@@ -173,11 +260,48 @@ class _HomeScreensState extends State<HomeScreens> {
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     textDirection: TextDirection.ltr,
                                     children: [
-                                      ElevatedButton(onPressed: (){
+                                      ElevatedButton(onPressed: ()async{
 
                                         if(formKey.currentState!=null && formKey.currentState!.validate())
                                         {
+                                          activityList.clear;
+                                          await databaseReference.once().then((value){
 
+                                            if(value.snapshot.child(activity_ID!).exists) {
+                                              String pass = value.snapshot.child(activity_ID!).child("password")
+                                                  .value
+                                                  .toString();
+                                              print(widget.uid);
+                                              print(value.snapshot.child("manager")
+                                                  .value
+                                                  .toString());
+                                              if (widget.uid == value.snapshot.child(activity_ID!).child("manager").value.toString()!) {
+                                                Fluttertoast.showToast(
+                                                    msg:
+                                                    "You are the manager of this activity. Can't join as user");
+                                                return;
+                                              } else if (activity_Password == pass) {
+                                                joinActivity(activity_ID.toString());
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          JoinedActivitiesScreen(widget.uid!,widget.UserName!)),
+                                                );
+                                                Fluttertoast.showToast(msg: "You Added");
+
+                                              }else {
+                                                Fluttertoast.showToast(
+                                                    msg: "Wrong Password");
+                                                return;
+                                              }
+                                            }else {
+                                              Fluttertoast.showToast(
+                                                  msg:
+                                                  "No such activity found.");
+                                              return;
+                                            }
+                                          });
                                         }
                                         else{
                                           return;
@@ -339,4 +463,17 @@ class _HomeScreensState extends State<HomeScreens> {
       ),
     );
   }
+
+  joinActivity(String id) async {
+    String currentTime = DateTime.now().toString();
+
+    await databaseReference
+        .child(id)
+        .child("Members")
+        .child(widget.uid!)
+        .child("Last Opened")
+        .set(currentTime);
+    Fluttertoast.showToast(msg: "Joined successfully");
+  }
+
 }

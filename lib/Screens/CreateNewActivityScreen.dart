@@ -81,6 +81,8 @@ class _CreateNewActivityScreenState extends State<CreateNewActivityScreen> {
                       if(passwordController!.isEmpty||passwordController==null)
                       {
                         return "Password Required";
+                      }else if(passwordController.length<6){
+                        return "Password should be greater than 6 characters";
                       }
                       else
                       {
@@ -123,6 +125,9 @@ class _CreateNewActivityScreenState extends State<CreateNewActivityScreen> {
                       if(ConfirmPasswordController!.isEmpty||ConfirmPasswordController==null)
                       {
                         return "Confirm Password Required";
+                      }else if(ConfirmPasswordController!=password){
+                        return "Confirm Password does not matched";
+
                       }
                       else
                       {
@@ -174,6 +179,7 @@ class _CreateNewActivityScreenState extends State<CreateNewActivityScreen> {
                               {
                                 ActivityModel activity_model = ActivityModel(id: RandomID.toString(), name: name!,manager:widget.uid, password: password!);
                                 databaseReference.child(RandomID.toString()).set(activity_model.toMap());
+                                Navigator.pop(context);
                               }
                             });
 

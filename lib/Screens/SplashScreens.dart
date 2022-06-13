@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:lock_up/Screens/LoginScreens.dart';
 
 import 'OnboardingScreen.dart';
 
@@ -20,7 +21,7 @@ class _SplashScreensState extends State<SplashScreens> {
       home: AnimatedSplashScreen(
         duration: 3000,
         splash:
-        Image.asset('assets/images/lock.png'), nextScreen: OnboardingScreen(),
+        Image.asset('assets/images/lock.png'), nextScreen: LoginScreens(),
       ),
     );
   }

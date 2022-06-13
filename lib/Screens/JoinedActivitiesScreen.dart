@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:share_plus/share_plus.dart';
 import '../Models/ActivityModel.dart';
@@ -27,16 +29,16 @@ class _JoinedActivitiesScreenState extends State<JoinedActivitiesScreen> {
   bool viewVisible = false;
 
   Future getAllActivities() async {
-    // final databaseReference =
-    // await FirebaseDatabase.instance.reference().child("Activities");
-    await test.once().then((value) {
-      allActivities.clear();
-      ActivtiyId.clear();
-      MatchedActivtiyId.clear();
-      for (var id in value.snapshot.children) {
-        ActivtiyId.add(id.key.toString());
-      }
-    });
+    try {
+      await test.once().then((value) {
+        allActivities.clear();
+        ActivtiyId.clear();
+        MatchedActivtiyId.clear();
+        for (var id in value.snapshot.children) {
+          ActivtiyId.add(id.key.toString());
+        }
+      });
+
     print(ActivtiyId.length);
 
     for (int i = 0; i < ActivtiyId.length; i++) {
@@ -53,144 +55,181 @@ class _JoinedActivitiesScreenState extends State<JoinedActivitiesScreen> {
 
     await getJoinedActivityDetail();
     await getMembersLength();
+
+    }on FirebaseAuthException catch(error)
+    {
+      Fluttertoast.showToast(msg: error.message.toString());
+    }
   }
 
   getMembersLength() async {
     int count = 0;
-    NumberOfMembers.clear();
-    for (int i = 0; i < MatchedActivtiyId.length; i++) {
-      await test.child(MatchedActivtiyId[i]).once().then((value) {
-        if (value.snapshot.child("Members").exists) {
-          count = value.snapshot.child("Members").children.length;
-          NumberOfMembers.add(count);
-        } else {
-          NumberOfMembers.add(0);
-        }
-      });
+    try {
+      NumberOfMembers.clear();
+      for (int i = 0; i < MatchedActivtiyId.length; i++) {
+        await test.child(MatchedActivtiyId[i]).once().then((value) {
+          if (value.snapshot
+              .child("Members")
+              .exists) {
+            count = value.snapshot
+                .child("Members")
+                .children
+                .length;
+            NumberOfMembers.add(count);
+          } else {
+            NumberOfMembers.add(0);
+          }
+        });
+      }
+    }on FirebaseAuthException catch(error)
+    {
+      Fluttertoast.showToast(msg: error.message.toString());
     }
   }
 
   getJoinedActivityDetail() async {
-    ActivtiyDetail.clear();
-    for (int i = 0; i < MatchedActivtiyId.length; i++) {
-      String Name, Manager, pass;
-      await test.child(MatchedActivtiyId[i]).once().then((value) {
-        Name = value.snapshot.child("name").value.toString();
-        Manager = value.snapshot.child("manager").value.toString();
-        pass = value.snapshot.child("password").value.toString();
+    try {
+      ActivtiyDetail.clear();
+      for (int i = 0; i < MatchedActivtiyId.length; i++) {
+        String Name, Manager, pass;
+        await test.child(MatchedActivtiyId[i]).once().then((value) {
+          Name = value.snapshot
+              .child("name")
+              .value
+              .toString();
+          Manager = value.snapshot
+              .child("manager")
+              .value
+              .toString();
+          pass = value.snapshot
+              .child("password")
+              .value
+              .toString();
 
-        ActivityModel activityModel = ActivityModel(
-            name: Name,
-            manager: Manager,
-            password: pass,
-            id: MatchedActivtiyId[i]);
-        ActivtiyDetail.add(activityModel);
-      });
+          ActivityModel activityModel = ActivityModel(
+              name: Name,
+              manager: Manager,
+              password: pass,
+              id: MatchedActivtiyId[i]);
+          ActivtiyDetail.add(activityModel);
+        });
+      }
+    }on FirebaseAuthException catch(error)
+    {
+      Fluttertoast.showToast(msg: error.message.toString());
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Joined Activities'),
-      ),
-      body: FutureBuilder(
-          future: getAllActivities(),
-          builder: (context, projectSnap) {
-            if (projectSnap.connectionState == ConnectionState.none &&
-                projectSnap.hasData == null) {
-              //print('project snapshot data is: ${projectSnap.data}');
-              return Container(
-                margin: EdgeInsets.only(top: 12),
-                child: Text('You have no active activities'),
-              );
-            } else {
-              return ListView.builder(
-                scrollDirection: Axis.vertical,
-                itemCount: ActivtiyDetail.length,
-                itemBuilder: (context, index) {
-                  var currentItem = ActivtiyDetail[index];
-                  if (ActivtiyDetail.length < 1 ||
-                      ActivtiyDetail.length == null) {
-                    return Container(
-                      margin: EdgeInsets.only(top: 12),
-                      child: Text('You have no active activities'),
-                    );
-                  } else
-                    return Container(
-                      width: double.infinity,
-                      height: 170,
-                      padding: new EdgeInsets.all(10.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) => ActivityScreen(
-                          //             ActivtiyDetail[index].id, widget.uid)));
-                        },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                          color: Colors.white,
-                          elevation: 10,
-                          child: Column(
-                            children: [
-                              ListTile(
-                                title: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(currentItem.name!,
-                                          style: TextStyle(fontSize: 24.0)),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Icon(Icons.location_city, size: 40),
-                                    ],
-                                  ),
-                                ),
-                                subtitle: Container(
-                                  margin: EdgeInsets.only(right: 20),
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                        "Members : " +
-                                            NumberOfMembers[index]
-                                                .toString() ??
-                                            "0",
-                                        style: TextStyle(fontSize: 15.0)),
-                                  ),
-                                ),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Joined Activities'),
+        ),
+        body: FutureBuilder(
+            future: getAllActivities(),
+            builder: (context, projectSnap) {
+              if (projectSnap.connectionState == ConnectionState.none &&
+                  projectSnap.hasData == null) {
+                //print('project snapshot data is: ${projectSnap.data}');
+                return Container(
+                  margin: EdgeInsets.only(top: 12),
+                  child: Align(
+                      alignment: Alignment.center,
+                      child: Text('You have no active activities',style: TextStyle(color: Colors.black),)),
+                );
+              } else {
+                return Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    itemCount: ActivtiyDetail.length,
+                    itemBuilder: (context, index) {
+                      var currentItem = ActivtiyDetail[index];
+                      if (ActivtiyDetail.length < 1 ||
+                          ActivtiyDetail.length == null) {
+                        return Container(
+                          margin: EdgeInsets.only(top: 12),
+                          child: Text('You have no active activities'),
+                        );
+                      } else
+                        return Container(
+                          width: double.infinity,
+                          height: 170,
+                          padding: new EdgeInsets.all(10.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              // Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) => ActivityScreen(
+                              //             ActivtiyDetail[index].id, widget.uid)));
+                            },
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
                               ),
-                              ButtonBar(
-                                alignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  IconButton(
-                                    icon: Icon(Icons.share),
-                                    onPressed: () {
-                                      Share.share("Activity Created By: " +
-                                          widget.username +
-                                          "\n\nActivity id: " +
-                                          currentItem.id! +
-                                          "\nActivity pass: " +
-                                          currentItem.password!);
-                                    },
+                              color: Colors.white,
+                              elevation: 10,
+                              child: Column(
+                                children: [
+                                  ListTile(
+                                    title: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          Text(currentItem.name!,
+                                              style: TextStyle(fontSize: 24.0)),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Icon(Icons.location_city, size: 40),
+                                        ],
+                                      ),
+                                    ),
+                                    subtitle: Container(
+                                      margin: EdgeInsets.only(right: 20),
+                                      child: Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Text(
+                                            "Members : " +
+                                                NumberOfMembers[index]
+                                                    .toString() ??
+                                                "0",
+                                            style: TextStyle(fontSize: 15.0)),
+                                      ),
+                                    ),
+                                  ),
+                                  ButtonBar(
+                                    alignment: MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      IconButton(
+                                        icon: Icon(Icons.share),
+                                        onPressed: () {
+                                          Share.share("Activity Created By: " +
+                                              widget.username +
+                                              "\n\nActivity id: " +
+                                              currentItem.id! +
+                                              "\nActivity pass: " +
+                                              currentItem.password!);
+                                        },
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                    );
-                },
-              );
-            }
-          }),
+                        );
+                    },
+                  ),
+                );
+              }
+            }),
+      ),
     );
   }
 

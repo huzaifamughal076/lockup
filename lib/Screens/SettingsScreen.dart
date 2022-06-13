@@ -13,9 +13,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
-            title: Align(
-                alignment: Alignment.centerLeft,
-                child: Text("Settings")),
+            title: Text("Settings"),
           ),
           body: Center(child: Text('Settings')) ,
         )

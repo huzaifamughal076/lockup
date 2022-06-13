@@ -15,9 +15,7 @@ class _TermsOfUseState extends State<TermsOfUse> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          title: Align(
-              alignment: Alignment.centerLeft,
-              child: Text("Terms Of Use",style: TextStyle(fontWeight: FontWeight.bold),)),
+          title: Text("Terms Of Use",style: TextStyle(fontWeight: FontWeight.bold),),
         ),
 
         body: SafeArea(

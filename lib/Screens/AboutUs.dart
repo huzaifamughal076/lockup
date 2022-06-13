@@ -15,9 +15,7 @@ class _AboutUsState extends State<AboutUs> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          title: Align(
-              alignment: Alignment.centerLeft,
-              child: Text("About Us",style: TextStyle(fontWeight: FontWeight.bold),)),
+          title: Text("About Us",style: TextStyle(fontWeight: FontWeight.bold),),
         ),
 
         body: SafeArea(

@@ -12,6 +12,14 @@ class _ContactUsState extends State<ContactUs> {
 
   late GoogleMapController mapController;
 
+  final formkey = GlobalKey<FormState>();
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController subjectController = TextEditingController();
+  TextEditingController messageController = TextEditingController();
+
+  String? email,subject,message;
+
   final LatLng _center = const LatLng(45.521563, -122.677433);
 
   void _onMapCreated(GoogleMapController controller) {
@@ -25,9 +33,7 @@ class _ContactUsState extends State<ContactUs> {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
-            title: Align(
-                alignment: Alignment.centerLeft,
-                child: Text("Contact Us")),
+            title: Text("Contact Us"),
           ),
           body:  SafeArea(
             child: SingleChildScrollView(
@@ -60,56 +66,94 @@ class _ContactUsState extends State<ContactUs> {
                         )
                       ],
                     ),
-                    child:Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
+                    child:Form(
+                      key: formkey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
 
-                        Container(
-                            margin: EdgeInsets.symmetric(vertical: 10),
-                            child: Text("Contact Us",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),)),
+                          Container(
+                              margin: EdgeInsets.symmetric(vertical: 10),
+                              child: Text("Contact Us",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),)),
 
-                        Container(
-                          margin: EdgeInsets.fromLTRB(10,0,10,0),
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              hintText: "Email",
-                              label: Text("Email"),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                          Container(
+                            margin: EdgeInsets.fromLTRB(10,0,10,0),
+                            child: TextFormField(
+                              validator: (emailController){
+                                if(emailController!.isEmpty ||
+                                    emailController == null)
+                                  {
+                                    return "Email Required";
+                                  }
+                                else{
+                                  email = emailController;
+                                  return null;
+                                }
+                              },
+                              decoration: InputDecoration(
+                                hintText: "Email",
+                                label: Text("Email"),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
+                              keyboardType: TextInputType.emailAddress,
                             ),
-                            keyboardType: TextInputType.emailAddress,
                           ),
-                        ),
 
-                        Container(
-                          margin: EdgeInsets.fromLTRB(10,10,10,0),
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              hintText: "Subject",
-                              label: Text("Subject"),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                          Container(
+                            margin: EdgeInsets.fromLTRB(10,10,10,0),
+                            child: TextFormField(
+                              validator: (subjectController)
+                              {
+                                if(subjectController!.isEmpty ||
+                                    subjectController == null)
+                                  {
+                                    return "Subject Required";
+                                  }
+                                else{
+                                  subject = subjectController;
+                                  return null;
+                                }
+                              },
+                              decoration: InputDecoration(
+                                hintText: "Subject",
+                                label: Text("Subject"),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
+                              keyboardType: TextInputType.text,
                             ),
-                            keyboardType: TextInputType.text,
                           ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.fromLTRB(10,10,10,10),
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              hintText: "Message",
-                              label: Text("Message"),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                          Container(
+                            margin: EdgeInsets.fromLTRB(10,10,10,10),
+                            child: TextFormField(
+                              validator: (messageController)
+                              {
+                                if(messageController!.isEmpty ||
+                                    messageController == null)
+                                {
+                                  return "Subject Required";
+                                }
+                                else{
+                                  message = messageController;
+                                  return null;
+                                }
+                              },
+                              decoration: InputDecoration(
+                                hintText: "Message",
+                                label: Text("Message"),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
+                              keyboardType: TextInputType.text,
                             ),
-                            keyboardType: TextInputType.text,
-                          ),
-                        )
+                          )
 
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(

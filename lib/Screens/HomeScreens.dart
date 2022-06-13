@@ -98,7 +98,6 @@ class _HomeScreensState extends State<HomeScreens> {
         String MyActivitiesText = "My Activities";
         String JoinedActivitiesText = "Joined Activities";
         String SettingsText = "Settings";
-        String SettingsTexts = "Settings";
         String AboutUsText = "About Us";
         String TermsOfUseText = "Terms of Use";
         String ContactUsText = "Contact Us";
